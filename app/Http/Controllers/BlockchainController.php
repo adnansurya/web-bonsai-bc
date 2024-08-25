@@ -11,13 +11,14 @@ class BlockchainController extends Controller
     {
         // Validasi parameter
         $request->validate([
+            'plant_id' => 'required|integer',
             'hash' => 'required|string',
             'type' => 'required|string',
         ]);
 
         // Simpan data ke dalam tabel blockchains
         $blockchain = new Blockchain();
-        $blockchain->product_id = 1; // Anda dapat mengganti dengan nilai yang sesuai
+        $blockchain->product_id = $request->plant_id; // Menyimpan plant_id ke dalam product_id
         $blockchain->transaction_hash = $request->hash;
         $blockchain->data_type = $request->type;
         $blockchain->save();
