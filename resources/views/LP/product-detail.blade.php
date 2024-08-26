@@ -79,6 +79,7 @@
 									<strong>Selamat!</strong> {{ session('success-add') }} <a href="/cart" class="text-success" style="text-decoration: underline"><strong>Keranjang</strong></a>
 								</div>
 							@endif
+							
 
 							<div class="flex-w flex-m p-b-30">
 								<form action="{{ route('cart.add', $product->id) }}" method="POST">
@@ -98,11 +99,12 @@
 										</button>
 									</div>
 									</form>
+									
 							</div>
 
 							<div class="txt-s-107 p-b-6">
 								<span class="cl6">
-									Stok:
+									Stok: 
 								</span>
 
 								<span class="cl9">
@@ -121,6 +123,26 @@
 									</span>
 								</a>
 							</div>
+							<div class="flex-w flex-m">
+								@if($latest_csv)
+								<button id="csv_btn" type="button" class="text-white flex-c-m txt-s-103 cl0 bg10 size-a-2 hov-btn2 trans-04 px-3"  data-toggle="collapse" data-target="#collapseExample">								
+									Lihat {{$latest_csv -> data_type}}
+								</button>
+								@endif
+								@if($latest_image)
+								<button id="image_btn" type="button" class="text-white ml-2 flex-c-m txt-s-103 cl0 bg10 size-a-2 hov-btn2 trans-04 px-3"  data-toggle="collapse" data-target="#collapseExample">								
+									Lihat {{$latest_image -> data_type}}
+								</button>
+								@endif								
+							</div>
+							@if($latest_csv || $latest_image)
+								<div class="collapse" id="collapseExample">
+									<div class="card card-body">
+										<div id="content_div">dpakdjak</div>
+									</div>
+								</div>
+							@endif
+
 						</div>
 					</div>
 				</div>
@@ -178,6 +200,66 @@
 			</div>
 		</div>
 	</section>
+
+	<script>
+		let clickedView = '';
+		const server_blockchain = 'http://127.0.0.1:5000'
+		let url_blockchain = server_blockchain + '/get_text_by_hash';
+	
+		function loadData(data_type){
+
+			let latest_csv_hash = '{{$latest_csv -> transaction_hash}}';
+			let latest_image_hash = '{{$latest_image -> transaction_hash}}';
+
+			let selected_hash; 
+
+			if(data_type == 'csv'){
+				selected_hash = latest_csv_hash;
+						
+			}else if(data_type == 'image'){
+				selected_hash = latest_image_hash;
+
+			}	
+		
+			$.ajax({
+				url: url_blockchain,
+				type: 'GET',
+				data: {
+					'hash' : selected_hash
+				},
+				success: function(response) {
+					console.log(response);	
+					if(data_type == 'csv'){
+						
+					}else if(data_type == 'image'){
+	
+					}				
+	
+				},error: function(xhr, status, error) {
+					console.error('AJAX Error: ' + status + error);
+				} 
+			});
+	
+			
+		}
+	
+		$(document).ready(function() {
+	
+			$('#csv_btn').click(function(){
+				clickedView = 'csv';
+				loadData(clickedView);
+			});
+	
+			$('#image_btn').click(function(){
+				clickedView = 'image';
+				loadData(clickedView);
+			});
+	
+		});
+
+	
+	</script>
+	
 	
 
 @endsection
