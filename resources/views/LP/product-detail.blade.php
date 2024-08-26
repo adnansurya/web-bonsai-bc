@@ -138,7 +138,7 @@
 							@if($latest_csv || $latest_image)
 								<div class="collapse" id="collapseExample">
 									<div class="card card-body">
-										<div id="content_div">dpakdjak</div>
+										<div id="content_div">-</div>
 									</div>
 								</div>
 							@endif
@@ -205,6 +205,39 @@
 		let clickedView = '';
 		const server_blockchain = 'http://127.0.0.1:5000'
 		let url_blockchain = server_blockchain + '/get_text_by_hash';
+
+		function createTableFromData(data) {
+			let row_counts = 0;
+			const row_limit = 5;
+            let tableHtml = `
+				<table id="dataTable" class="display responsive nowrap" style="width:100%">
+					<thead>
+						<tr>`;
+
+						// Ambil kolom dari objek pertama
+						Object.keys(data[0]).forEach(function (key) {
+							tableHtml += `<th>${key}</th>`;
+						});
+
+						tableHtml += `</tr>
+					</thead>
+					<tbody>`;
+
+						data.forEach(function (row) {
+							row_counts += 1;
+							tableHtml += '<tr>';
+							Object.values(row).forEach(function (value) {
+								tableHtml += `<td>${value}</td>`;
+							});
+							tableHtml += '</tr>';							
+						});
+
+						tableHtml += `
+					</tbody>
+				</table>`;
+
+            return tableHtml;
+        }
 	
 		function loadData(data_type){
 
@@ -229,11 +262,37 @@
 				},
 				success: function(response) {
 					console.log(response);	
-					if(data_type == 'csv'){
-						
-					}else if(data_type == 'image'){
-	
-					}				
+					let result = response;					
+					const collapseBody = $('#content_div');
+					collapseBody.empty();  // Bersihkan modal sebelumnya
+
+					if (result.success) {
+						try {
+							const parsedData = JSON.parse(result.data.replace(/'/g, '"'));  // Ubah string JSON menjadi objek
+							if (parsedData.type === 'csv') {
+								// Tampilkan data dalam bentuk tabel
+								collapseBody.html(createTableFromData(parsedData.data));
+
+								// Inisialisasi DataTable dengan fitur responsif
+								$('#dataTable').DataTable({
+									responsive: true
+								});
+							} else if (parsedData.type === 'image') {
+								// Tampilkan data sebagai gambar
+								collapseBody.html(`<img src="data:image/jpeg;base64,${parsedData.image}" class="img-fluid" />`);
+							}
+						} catch (e) {
+							// Jika JSON parsing gagal, anggap ini sebagai string data yang dapat langsung ditampilkan
+							collapseBody.html(`
+								<p id="textToCopy">${result.data}</p>
+								<button id="copyButton" class="btn btn-primary">Copy to Clipboard</button>
+							`);							
+						}
+					} else {
+						collapseBody.text('An error occurred.');
+					}
+
+            $('#outputModal').modal('show');			
 	
 				},error: function(xhr, status, error) {
 					console.error('AJAX Error: ' + status + error);
