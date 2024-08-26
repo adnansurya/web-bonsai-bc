@@ -21,3 +21,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::get('/add-blockchain', [BlockchainController::class, 'store']);
+Route::get('/blockchain/latest/{product_id}', [BlockchainController::class, 'getLatestByType']);

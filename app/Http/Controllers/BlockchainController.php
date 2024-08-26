@@ -25,4 +25,25 @@ class BlockchainController extends Controller
 
         return response()->json(['success' => true, 'message' => 'Data blockchain berhasil ditambahkan']);
     }
+
+    public function getLatestByType($product_id)
+    {
+        // Ambil data terbaru dengan type 'image'
+        $imageData = Blockchain::where('product_id', $product_id)
+                                ->where('data_type', 'image')
+                                ->latest()
+                                ->first();
+
+        // Ambil data terbaru dengan type 'csv'
+        $csvData = Blockchain::where('product_id', $product_id)
+                              ->where('data_type', 'csv')
+                              ->latest()
+                              ->first();
+
+        // Kembalikan hasil dalam bentuk JSON
+        return response()->json([
+            'latest_image' => $imageData,
+            'latest_csv' => $csvData,
+        ]);
+    }
 }
