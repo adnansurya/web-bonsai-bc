@@ -240,9 +240,16 @@
         }
 	
 		function loadData(data_type){
+			
+			let latest_csv_hash = '';
+			let latest_image_hash = '';
 
-			let latest_csv_hash = '{{$latest_csv -> transaction_hash}}';
-			let latest_image_hash = '{{$latest_image -> transaction_hash}}';
+			@if($latest_csv)
+			latest_csv_hash = '{{$latest_csv -> transaction_hash}}';
+			@endif
+			@if($latest_image)
+			latest_image_hash = '{{$latest_image -> transaction_hash}}';
+			@endif
 
 			let selected_hash; 
 
